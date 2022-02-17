@@ -96,3 +96,11 @@ textarea{
 .task{
   cursor: pointer;
 }
+
+.red{
+  background-color: red;
+}
+
+.green{
+  background-color: rgb(93, 184, 58);
+}
