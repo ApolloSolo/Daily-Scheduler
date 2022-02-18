@@ -1,7 +1,7 @@
 const startTime = 9;
 const endOfDay = 23;
 
-let tasks = {};
+let tasks = [];
 
 //Add time to header
 setInterval(function (){
@@ -16,7 +16,6 @@ const createTimeBlock = function(setTime, attributeTime){
     const hourBlock = $("<div>").addClass("hour-block");
     const hour = $("<div>").addClass("hour");
     const hourSpan = $("<span>");
-    hourSpan.attr("data-hour", `${attributeTime}`);
 
      hour.append(hourSpan);
      hourSpan.text(setTime);
@@ -24,6 +23,7 @@ const createTimeBlock = function(setTime, attributeTime){
 
      const taskContent = $("<div>").addClass("hour-content");
      const pEl = $("<p>").addClass("task");
+     pEl.attr("data-hour", `${attributeTime}`);
      pEl.text("No Event Scheduled");
      const tabEl = $("<div>").addClass("tab");
      taskContent.append(pEl);
@@ -34,24 +34,19 @@ const createTimeBlock = function(setTime, attributeTime){
      $(".container").append(hourBlock);
 }
 
-
-
 //Set hours
 for(let i = startTime; i <= endOfDay; i++){
     let time = moment().set({'hour': i, 'minute': 0});
     createTimeBlock(time.format('LT'), i);
 }
 
-
-
-
-
 //Click on p tag and edit by changing into text area
 $(".hour-content").on("click", ".task", function(){
     let text = $(this).text().trim();
+    let att = $(this).attr("data-hour");
     
     let textInput = $("<textarea>").addClass("form-control").val(text);
-
+    textInput.attr("data-hour", att)
     $(this).replaceWith(textInput);
     textInput.trigger("focus");
 })
@@ -59,8 +54,18 @@ $(".hour-content").on("click", ".task", function(){
 //Change back into p tag after saving edit 
 $(".container").on("blur", "textarea", function () {
     let text = $(this).val().trim();
-    let textP = $("<p>").addClass("m-1").text(text);
+    let att = $(this).attr("data-hour");
+    let textP = $("<p>").addClass("task").text(text);
+    textP.attr("data-hour", att);
     $(this).replaceWith(textP);
+
+    let newTask = {
+      task: text,
+      time: att
+    }
+
+    tasks.push(newTask);
+
 })
 
 const auditTask = function(taskEl){
@@ -74,7 +79,7 @@ const auditTask = function(taskEl){
   // remove any old classes from element
   //$(taskEl).removeClass("list-group-item-warning list-group-item-danger");
   
-   if(moment().isAfter(dateTime)){
+   if(moment().isAfter(dateTime.add(1, 'hours'))){
     $(taskEl).next().addClass("red");
    
    }
