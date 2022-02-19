@@ -1,5 +1,6 @@
 const startTime = 9;
-const endOfDay = 23;
+const endOfDay = 17;
+const hourInDay = endOfDay - startTime + 1;
 
 let tasks = [];
 
@@ -10,10 +11,14 @@ setInterval(function (){
 }, 1000);
 
 //Need to set a data attribute to time block to make time association - date-time-9, 10, 11...
+const saveTasks = function () {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+};
 
 //create time blocks
-const createTimeBlock = function(setTime, attributeTime){
+const createTimeBlock = function(setTime, attributeTime, taskData){
     const hourBlock = $("<div>").addClass("hour-block");
+    hourBlock.attr("data-hour", `${attributeTime}`);
     const hour = $("<div>").addClass("hour");
     const hourSpan = $("<span>");
 
@@ -23,12 +28,13 @@ const createTimeBlock = function(setTime, attributeTime){
 
      const taskContent = $("<div>").addClass("hour-content");
      const pEl = $("<p>").addClass("task");
-     pEl.attr("data-hour", `${attributeTime}`);
-     pEl.text("No Event Scheduled");
+     pEl.attr("data-hour", `${attributeTime}`)
+     pEl.text(taskData);
      const tabEl = $("<div>").addClass("tab");
+     let icon = $("<i>").addClass("fa-solid fa-table-cells-large")
+     tabEl.append(icon)
      taskContent.append(pEl);
      hourBlock.append(taskContent);
-     tabEl.text("TAB");
      hourBlock.append(tabEl);
 
      $(".container").append(hourBlock);
@@ -37,7 +43,7 @@ const createTimeBlock = function(setTime, attributeTime){
 //Set hours
 for(let i = startTime; i <= endOfDay; i++){
     let time = moment().set({'hour': i, 'minute': 0});
-    createTimeBlock(time.format('LT'), i);
+    createTimeBlock(time.format('LT'), i, "No Events Scheduled");
 }
 
 //Click on p tag and edit by changing into text area
@@ -57,6 +63,12 @@ $(".container").on("blur", "textarea", function () {
     let att = $(this).attr("data-hour");
     let textP = $("<p>").addClass("task").text(text);
     textP.attr("data-hour", att);
+
+    //Maintian text in box
+    if(text === ""){
+      textP.text("No Events Scheduled");
+    }
+    
     $(this).replaceWith(textP);
 
     let newTask = {
@@ -64,7 +76,20 @@ $(".container").on("blur", "textarea", function () {
       time: att
     }
 
+    if(newTask.task === ""){
+      newTask.task = "No Events Scheduled"
+    }
+
+    if(tasks.length > 0){
+      for(let i = 0; i < tasks.length; i++){
+        if(newTask.time == tasks[i].time){
+          tasks.splice(i,1);
+        }
+      }
+    }
+
     tasks.push(newTask);
+    saveTasks();
 
 })
 
@@ -88,11 +113,41 @@ const auditTask = function(taskEl){
    }
 }
 
+var loadTasks = function () {
+  tasks = JSON.parse(localStorage.getItem("tasks"));
+
+  // if nothing in localStorage, create a new object to track all task status arrays
+  if (!tasks) {
+    tasks = [];
+  }
+  let elArray = []
+  // loop over object properties
+  for(let i = 0; i < hourInDay; i++){
+    let hours = $(".hour-block");
+    elArray.push(hours[i]);
+}
+
+for(let i = 0; i < hourInDay; i++){
+  let timeVal = elArray[i].getAttribute("data-hour");
+  let taskPtag = elArray[i].querySelector(".task");
+  for(let j = 0; j < hourInDay; j++){
+    if(tasks[j]){
+      if(timeVal == tasks[j].time){
+        taskPtag.textContent = tasks[j].task;
+      }
+    }
+  }
+}
+  
+};
+
 //Auto update task audit 
   setInterval(function(){
       $(".hour").each(function(index, el){
         auditTask(el);
       });
     }, 1000);
+
+    loadTasks();
 
     //to reset code on a 24 hour basis, on load, look at local storage date and reset based on differance in current time.

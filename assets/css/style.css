@@ -81,16 +81,29 @@ textarea{
 
 .hour-content{
   width: 100%;
-  background-color: #77dd77;
+  background-color: #c4c4c4;
   border-left: solid gray 2px;
   border-right: solid rgb(32, 143, 247) 2px;
   padding: 1rem;
 }
 
+.hour{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-left-radius: .5rem;
+  border-bottom-left-radius: .5rem;
+  width: 100px;
+}
 
 .tab{
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: #06AED5;
   width: 75px;
+  border-top-right-radius: .5rem;
+  border-bottom-right-radius: .5rem;
 }
 
 .task{
@@ -98,9 +111,9 @@ textarea{
 }
 
 .red{
-  background-color: red;
+  background-color: rgba(255, 0, 0, 0.5);
 }
 
 .green{
-  background-color: rgb(93, 184, 58);
+  background-color: rgba(43, 255, 0, 0.5);
 }
