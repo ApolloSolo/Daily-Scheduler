@@ -31,7 +31,7 @@ const createTimeBlock = function(setTime, attributeTime, taskData){
      pEl.attr("data-hour", `${attributeTime}`)
      pEl.text(taskData);
      const tabEl = $("<div>").addClass("tab");
-     let icon = $("<i>").addClass("fa-solid fa-table-cells-large")
+     let icon = $("<i>").addClass("fa-solid fa-laptop-code")
      tabEl.append(icon)
      taskContent.append(pEl);
      hourBlock.append(taskContent);
